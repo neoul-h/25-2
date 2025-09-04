@@ -1,1 +1,5 @@
-print("Hello World")
+print("***********")
+print("202104008/김진우")
+print("***********")
+line = input()
+print("다짐 : ", line)
