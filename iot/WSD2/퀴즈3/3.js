@@ -1,0 +1,1 @@
+console.log(require.main.exports === module.exports & exports === this);
