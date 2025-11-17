@@ -29,7 +29,7 @@ ALPHA_SCATTER = 0.6           # 산점도 투명도
 # ------------------------------------------------------------
 
 # [실행용 macOS 경로 설정]  (본인 경로 맞춰서 수정 가능)
-MAC_BASE_DIR = os.path.expanduser("Image Deeplearning")
+MAC_BASE_DIR = os.path.expanduser("/Users/neoul_h/25-2/Image Deeplearning")
 CSV_PATH = os.path.join(MAC_BASE_DIR, "data.csv")
 
 # ========================= (1) ==============================
