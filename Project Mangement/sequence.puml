@@ -1,0 +1,33 @@
+@startuml
+actor User
+
+boundary MobileApp
+control APIServer
+control RecommendationEngine
+database FirebaseDB
+participant "Google Maps API" as MapsAPI
+participant "ChatGPT API" as GPTAPI
+
+User -> MobileApp: tap "Get Recommendation"
+MobileApp -> APIServer: sendRecommendationRequest(location, mood, time, prefs)
+
+APIServer -> FirebaseDB: queryUserProfile(userId)
+FirebaseDB --> APIServer: userProfile
+
+APIServer -> FirebaseDB: queryVisitLogs(userId)
+FirebaseDB --> APIServer: visitLogs
+
+APIServer -> MapsAPI: searchNearbyPlaces(location)
+MapsAPI --> APIServer: nearbyPlaces
+
+APIServer -> RecommendationEngine: recommend(userProfile, visitLogs, nearbyPlaces, context)
+RecommendationEngine -> RecommendationEngine: computeScores()
+RecommendationEngine --> APIServer: topPlaces
+
+APIServer -> GPTAPI: generateDescription(topPlaces, mood, context)
+GPTAPI --> APIServer: recommendationPhrases
+
+APIServer --> MobileApp: recommendationResponse(topPlaces + phrases)
+MobileApp --> User: display recommendation cards
+
+@enduml

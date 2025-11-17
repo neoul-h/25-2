@@ -1,0 +1,91 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class User {
+  - userId: String
+  - nickname: String
+  - preferredCategories: List
+  - budgetRange: String
+  - createdAt: DateTime
+  + updatePreferences()
+  + getProfile()
+}
+
+class Place {
+  - placeId: String
+  - name: String
+  - category: String
+  - latitude: double
+  - longitude: double
+  - tags: List
+  - avgRating: float
+  + getSummary()
+}
+
+class VisitLog {
+  - logId: String
+  - visitTime: DateTime
+  - stayDurationMinutes: int
+  - feedbackType: String  // LIKE, DISLIKE, NEUTRAL
+  + recordFeedback()
+}
+
+class PreferenceModel {
+  - user: User
+  + updateFromLog(log: VisitLog)
+  + getScore(place: Place): float
+}
+
+class EventPost {
+  - eventId: String
+  - title: String
+  - description: String
+  - startDate: DateTime
+  - endDate: DateTime
+  - createdAt: DateTime
+}
+
+class RecommendationContext {
+  - mood: String        // healing, focus, avoid-crowd...
+  - timeSlot: String    // morning, afternoon, night
+  - availableMinutes: int
+  - locationLat: double
+  - locationLng: double
+}
+
+class RecommendationEngine {
+  + recommend(user: User, context: RecommendationContext): List
+}
+
+class AuthService {
+  + signUp()
+  + signIn()
+  + verifyToken()
+}
+
+class PlaceService {
+  + searchNearby(context: RecommendationContext): List
+  + getPlaceDetail(placeId: String): Place
+}
+
+class EventService {
+  + getActiveEvents(lat: double, lng: double): List
+}
+
+class RecommendationController {
+  + handleRecommendRequest(requestDto): responseDto
+}
+
+User "1" -- "0..*" VisitLog
+User "1" -- "1" PreferenceModel
+Place "1" -- "0..*" VisitLog
+Place "1" -- "0..*" EventPost
+
+RecommendationEngine ..> PreferenceModel
+RecommendationEngine ..> PlaceService
+RecommendationEngine ..> EventService
+
+RecommendationController ..> RecommendationEngine
+RecommendationController ..> AuthService
+
+@enduml
