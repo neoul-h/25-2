@@ -1,7 +1,6 @@
 {
   "name": "step4",
   "version": "1.0.0",
-  "description": "",
   "main": "app.js",
   "scripts": {
     "start": "nodemon"
@@ -9,17 +8,20 @@
   "author": "Prof. Wonvin Kim, Computer Software, Korean Bibie University",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.0.0",
-    "cookie-parser": "^1.4.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "express-session": "^1.17.1",
-    "morgan": "^1.10.0",
-    "nunjucks": "^3.2.2",
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^8.6.0",
+    "express": "^4.21.2",
+    "express-session": "^1.18.2",
+    "morgan": "^1.10.1",
+    "mysql2": "^3.15.3",
+    "nunjucks": "^3.2.4",
     "passport": "^0.4.1",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "sequelize": "^6.37.7"
   },
   "devDependencies": {
-    "nodemon": "^2.0.6"
-  }
+    "nodemon": "^2.0.22"
+  },
+  "description": ""
 }
