@@ -1,0 +1,15 @@
+@startuml
+skinparam defaultFontName "Apple SD Gothic Neo"
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+title FAVORITE 테이블 명세 다이어그램
+
+class Favorite as "FAVORITE 테이블\n(즐겨찾기)" << (T,#FFAAAA) >> {
+  + favorite_id : VARCHAR(36) {PK, NN}       ' 즐겨찾기 식별자
+  user_id : VARCHAR(36) {FK, NN}             ' → USER.user_id
+  place_id : VARCHAR(36) {FK, NN}            ' → PLACE.place_id
+  created_at : DATETIME {NN}                 ' 즐겨찾기 등록 일시
+}
+
+@enduml

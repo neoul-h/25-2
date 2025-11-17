@@ -1,25 +1,28 @@
 @startuml
+skinparam defaultFontName "Apple SD Gothic Neo"
 left to right direction
 skinparam packageStyle rectangle
 
-actor "User" as User
-actor "Business Owner" as Owner
-actor "Admin" as Admin
+title 로코리(Localy) 유스케이스 다이어그램
 
-usecase "UC01: Request Local Recommendation" as UC01
-usecase "UC02: Search Nearby Places" as UC02
-usecase "UC03: View Place Detail" as UC03
-usecase "UC04: Manage Favorites" as UC04
-usecase "UC05: Give Feedback" as UC05
-usecase "UC06: Browse Local Events" as UC06
-usecase "UC07: Sign Up / Sign In" as UC07
+actor "사용자" as User
+actor "사업자(점주)" as Owner
+actor "관리자" as Admin
 
-usecase "UC08: Register Place" as UC08
-usecase "UC09: Manage Place Info" as UC09
-usecase "UC10: Post Event/Promotion" as UC10
+usecase "UC01: 로컬 추천 요청" as UC01
+usecase "UC02: 주변 장소 검색" as UC02
+usecase "UC03: 장소 상세 보기" as UC03
+usecase "UC04: 즐겨찾기 관리" as UC04
+usecase "UC05: 방문 피드백 남기기" as UC05
+usecase "UC06: 로컬 이벤트 목록 보기" as UC06
+usecase "UC07: 회원가입 / 로그인" as UC07
 
-usecase "UC11: Approve Place" as UC11
-usecase "UC12: Manage Reports" as UC12
+usecase "UC08: 매장 등록 요청" as UC08
+usecase "UC09: 매장 정보 수정" as UC09
+usecase "UC10: 이벤트/프로모션 등록" as UC10
+
+usecase "UC11: 매장 등록 승인/거절" as UC11
+usecase "UC12: 신고 / 비정상 활동 관리" as UC12
 
 User  --> UC01
 User  --> UC02

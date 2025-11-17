@@ -1,0 +1,17 @@
+@startuml
+skinparam defaultFontName "Apple SD Gothic Neo"
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+title VISIT_LOG 테이블 명세 다이어그램
+
+class VisitLog as "VISIT_LOG 테이블\n(방문 기록)" << (T,#FFAAAA) >> {
+  + log_id : VARCHAR(36) {PK, NN}            ' 방문 로그 식별자
+  user_id : VARCHAR(36) {FK, NN}             ' → USER.user_id
+  place_id : VARCHAR(36) {FK, NN}            ' → PLACE.place_id
+  visit_time : DATETIME {NN}                 ' 방문 일시
+  stay_duration_minutes : INT {NULL}         ' 체류 시간(분)
+  feedback_type : VARCHAR(20) {NULL}         ' LIKE / DISLIKE / NEUTRAL
+}
+
+@enduml

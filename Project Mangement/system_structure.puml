@@ -1,0 +1,33 @@
+@startuml
+skinparam defaultFontName "Apple SD Gothic Neo"
+skinparam componentStyle rectangle
+skinparam shadowing false
+
+title 로코리(Localy) 시스템 구조도
+
+package "클라이언트 계층\n(Client Layer)" {
+  [모바일 앱\n(Flutter)]
+}
+
+package "서버 계층\n(Server Layer / FastAPI)" {
+  [API 서버]
+  [추천 엔진]
+}
+
+package "데이터 계층\n(Data Layer / Firebase)" {
+  database "Firebase DB\n(Firestore / Realtime DB)" as FirebaseDB
+}
+
+package "외부 서비스\n(External Services)" {
+  cloud "Google Maps API" as MapsAPI
+  cloud "ChatGPT API" as GPTAPI
+}
+
+[모바일 앱\n(Flutter)] --> [API 서버] : REST API\n(HTTPS 요청/응답)
+[API 서버] --> [추천 엔진] : 내부 호출
+
+[API 서버] --> FirebaseDB : 읽기/쓰기\n(사용자, 장소, 로그)
+[API 서버] --> MapsAPI : 주변 장소 검색,\n지도 데이터
+[API 서버] --> GPTAPI : 추천 설명 문구 생성\n(기분/취향 분석)
+
+@enduml

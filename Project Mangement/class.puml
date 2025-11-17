@@ -1,42 +1,50 @@
 @startuml
+skinparam defaultFontName "Apple SD Gothic Neo"
 skinparam classAttributeIconSize 0
+skinparam shadowing false
 
-class User {
-  - userId: String
+title 로코리(Localy) 클래스 다이어그램
+
+class User as "User\n(사용자)" {
+  - user_id: String
   - nickname: String
   - preferredCategories: List
   - budgetRange: String
   - createdAt: DateTime
-  + updatePreferences()
-  + getProfile()
+  --
+  + updatePreferences()  ' 사용자 선호도 업데이트
+  + getProfile()         ' 프로필 조회
 }
 
-class Place {
-  - placeId: String
+class Place as "Place\n(장소)" {
+  - place_id: String
   - name: String
   - category: String
   - latitude: double
   - longitude: double
   - tags: List
   - avgRating: float
-  + getSummary()
+  --
+  + getSummary()         ' 장소 요약 정보 반환
 }
 
-class VisitLog {
-  - logId: String
+class VisitLog as "VisitLog\n(방문 기록)" {
+  - log_id: String
   - visitTime: DateTime
   - stayDurationMinutes: int
-  - feedbackType: String  // LIKE, DISLIKE, NEUTRAL
-  + recordFeedback()
+  - feedbackType: String   ' LIKE / DISLIKE / NEUTRAL
+  --
+  + recordFeedback()       ' 방문 피드백 기록
 }
 
-class PreferenceModel {
+class PreferenceModel as "PreferenceModel\n(사용자 선호 모델)" {
   - user: User
+  --
   + updateFromLog(log: VisitLog)
   + getScore(place: Place): float
 }
 
-class EventPost {
+class EventPost as "EventPost\n(로컬 이벤트/홍보)" {
   - eventId: String
   - title: String
   - description: String
@@ -45,45 +53,46 @@ class EventPost {
   - createdAt: DateTime
 }
 
-class RecommendationContext {
-  - mood: String        // healing, focus, avoid-crowd...
-  - timeSlot: String    // morning, afternoon, night
-  - availableMinutes: int
+class RecommendationContext as "RecommendationContext\n(추천 컨텍스트)" {
+  - mood: String           ' 힐링, 집중, 사람 피하고 싶음 등
+  - timeSlot: String       ' 오전/오후/야간 등
+  - availableMinutes: int  ' 남은 시간(분)
   - locationLat: double
   - locationLng: double
 }
 
-class RecommendationEngine {
+class RecommendationEngine as "RecommendationEngine\n(추천 엔진)" {
   + recommend(user: User, context: RecommendationContext): List
 }
 
-class AuthService {
+class AuthService as "AuthService\n(인증 서비스)" {
   + signUp()
   + signIn()
   + verifyToken()
 }
 
-class PlaceService {
+class PlaceService as "PlaceService\n(장소 서비스)" {
   + searchNearby(context: RecommendationContext): List
   + getPlaceDetail(placeId: String): Place
 }
 
-class EventService {
+class EventService as "EventService\n(이벤트 서비스)" {
   + getActiveEvents(lat: double, lng: double): List
 }
 
-class RecommendationController {
+class RecommendationController as "RecommendationController\n(추천 컨트롤러)" {
   + handleRecommendRequest(requestDto): responseDto
 }
 
-User "1" -- "0..*" VisitLog
-User "1" -- "1" PreferenceModel
-Place "1" -- "0..*" VisitLog
-Place "1" -- "0..*" EventPost
+User "1" -- "0..*" VisitLog : 방문한다
+User "1" -- "1" PreferenceModel : 선호모델
 
-RecommendationEngine ..> PreferenceModel
-RecommendationEngine ..> PlaceService
-RecommendationEngine ..> EventService
+Place "1" -- "0..*" VisitLog : 방문기록
+Place "1" -- "0..*" EventPost : 이벤트
+
+RecommendationEngine ..> PreferenceModel : 참조
+RecommendationEngine ..> PlaceService : 장소 조회
+RecommendationEngine ..> EventService : 이벤트 조회
 
 RecommendationController ..> RecommendationEngine
 RecommendationController ..> AuthService

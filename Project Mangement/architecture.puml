@@ -1,0 +1,60 @@
+@startuml
+skinparam defaultFontName "Apple SD Gothic Neo"
+skinparam componentStyle rectangle
+skinparam shadowing false
+
+title 로코리(Localy) 3계층 아키텍처 다이어그램
+
+package "표현 계층\n(Presentation Layer / Flutter 모바일 앱)" {
+  [UI 화면\n(홈, 추천, 장소 상세, 이벤트 목록)] as UIScreens
+  [모바일 컨트롤러\n(ViewModel / Bloc 등)] as MobileController
+}
+
+package "애플리케이션 계층\n(Application Layer / FastAPI 서버)" {
+  [AuthService\n(인증 서비스)] as AuthService
+  [RecommendationController\n(추천 API 컨트롤러)] as RecController
+  [PlaceService\n(장소 서비스)] as PlaceService
+  [EventService\n(이벤트 서비스)] as EventService
+  [RecommendationEngine\n(추천 엔진)] as RecEngine
+}
+
+package "데이터 계층\n(Data Layer)" {
+  package "Firebase" {
+    database "User 컬렉션" as UserDB
+    database "Place 컬렉션" as PlaceDB
+    database "VisitLog 컬렉션" as LogDB
+    database "Event 컬렉션" as EventDB
+  }
+
+  package "외부 API" {
+    cloud "Google Maps API" as MapsAPI
+    cloud "ChatGPT API" as GPTAPI
+  }
+}
+
+' 표현 계층 -> 애플리케이션 계층
+UIScreens --> MobileController
+
+MobileController --> AuthService : REST API\n(회원가입/로그인)
+MobileController --> RecController : REST API\n(추천 요청)
+MobileController --> PlaceService : REST API\n(검색/상세 조회)
+MobileController --> EventService : REST API\n(이벤트 목록 조회)
+
+' 애플리케이션 계층 내부
+RecController --> RecEngine
+RecController --> PlaceService
+RecController --> EventService
+
+AuthService --> UserDB
+PlaceService --> PlaceDB
+EventService --> EventDB
+RecEngine --> UserDB
+RecEngine --> LogDB
+RecEngine --> PlaceDB
+
+PlaceService --> MapsAPI
+RecEngine --> MapsAPI
+
+RecEngine --> GPTAPI
+
+@enduml

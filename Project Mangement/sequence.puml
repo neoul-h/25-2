@@ -1,33 +1,37 @@
 @startuml
-actor User
+skinparam defaultFontName "Apple SD Gothic Neo"
 
-boundary MobileApp
-control APIServer
-control RecommendationEngine
-database FirebaseDB
+title "로코리(Localy) 추천 시나리오 시퀀스 다이어그램"
+
+actor 사용자 as User
+
+boundary "모바일 앱\n(Flutter)" as MobileApp
+control "API 서버\n(FastAPI)" as APIServer
+control "추천 엔진\n(RecommendationEngine)" as RecommendationEngine
+database "Firebase DB" as FirebaseDB
 participant "Google Maps API" as MapsAPI
 participant "ChatGPT API" as GPTAPI
 
-User -> MobileApp: tap "Get Recommendation"
-MobileApp -> APIServer: sendRecommendationRequest(location, mood, time, prefs)
+User -> MobileApp: "추천 받기" 버튼 탭
+MobileApp -> APIServer: 추천 요청 전송\n(위치, 기분, 시간, 기본 취향)
 
-APIServer -> FirebaseDB: queryUserProfile(userId)
-FirebaseDB --> APIServer: userProfile
+APIServer -> FirebaseDB: 사용자 프로필 조회\n(user_id)
+FirebaseDB --> APIServer: 사용자 프로필
 
-APIServer -> FirebaseDB: queryVisitLogs(userId)
-FirebaseDB --> APIServer: visitLogs
+APIServer -> FirebaseDB: 방문 로그 조회\n(user_id)
+FirebaseDB --> APIServer: 방문 로그 목록
 
-APIServer -> MapsAPI: searchNearbyPlaces(location)
-MapsAPI --> APIServer: nearbyPlaces
+APIServer -> MapsAPI: 주변 장소 검색\n(현재 위치)
+MapsAPI --> APIServer: 주변 장소 후보 목록
 
-APIServer -> RecommendationEngine: recommend(userProfile, visitLogs, nearbyPlaces, context)
-RecommendationEngine -> RecommendationEngine: computeScores()
-RecommendationEngine --> APIServer: topPlaces
+APIServer -> RecommendationEngine: 추천 요청\n(프로필, 방문로그, 후보 장소, 컨텍스트)
+RecommendationEngine -> RecommendationEngine: 점수 계산 및 상위 N개 선정
+RecommendationEngine --> APIServer: 추천 장소 목록
 
-APIServer -> GPTAPI: generateDescription(topPlaces, mood, context)
-GPTAPI --> APIServer: recommendationPhrases
+APIServer -> GPTAPI: 추천 설명 문구 생성 요청\n(추천 장소 + 기분/취향)
+GPTAPI --> APIServer: 추천 설명 문구 리스트
 
-APIServer --> MobileApp: recommendationResponse(topPlaces + phrases)
-MobileApp --> User: display recommendation cards
+APIServer --> MobileApp: 추천 결과 응답\n(장소 목록 + 설명)
+MobileApp --> User: 추천 카드 UI로 결과 표시
 
 @enduml

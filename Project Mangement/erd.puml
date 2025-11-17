@@ -1,0 +1,81 @@
+@startuml
+skinparam defaultFontName "Apple SD Gothic Neo"
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+' 한글 테이블 표시용 매크로
+!define Table(name,label) class name as "label" << (T,#FFAAAA) >>
+
+title 로코리(Localy) ER 다이어그램 (개념 설계)
+
+Table(User, "USER\n(사용자 정보)") {
+  + user_id : String
+  --
+  nickname : String
+  email : String
+  budget_range : String
+  preferred_categories : String
+  created_at : DateTime
+}
+
+Table(Place, "PLACE\n(장소 정보)") {
+  + place_id : String
+  --
+  name : String
+  category : String
+  address : String
+  latitude : double
+  longitude : double
+  price_level : int
+  tags : String
+  avg_rating : float
+}
+
+Table(VisitLog, "VISIT_LOG\n(방문 기록)") {
+  + log_id : String
+  --
+  user_id : String
+  place_id : String
+  visit_time : DateTime
+  stay_duration_minutes : int
+  feedback_type : String   ' LIKE / DISLIKE / NEUTRAL
+}
+
+Table(Favorite, "FAVORITE\n(즐겨찾기)") {
+  + favorite_id : String
+  --
+  user_id : String
+  place_id : String
+  created_at : DateTime
+}
+
+Table(Event, "EVENT\n(이벤트/프로모션)") {
+  + event_id : String
+  --
+  place_id : String
+  title : String
+  description : String
+  start_date : DateTime
+  end_date : DateTime
+  created_at : DateTime
+}
+
+Table(Preference, "PREFERENCE\n(사용자 선호 모델)") {
+  + user_id : String
+  --
+  preferred_categories : String
+  time_pattern : String
+  mood_pattern : String
+}
+
+' 관계 설정
+User "1" -- "0..*" VisitLog : 방문
+Place "1" -- "0..*" VisitLog : 방문됨
+
+User "1" -- "0..*" Favorite : 즐겨찾기
+Place "1" -- "0..*" Favorite : 즐겨찾기에 포함
+
+Place "1" -- "0..*" Event : 이벤트 개최
+User "1" -- "1" Preference : 선호정보
+
+@enduml

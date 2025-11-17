@@ -1,0 +1,20 @@
+@startuml
+skinparam defaultFontName "Apple SD Gothic Neo"
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+title PLACE 테이블 명세 다이어그램
+
+class Place as "PLACE 테이블\n(장소 정보)" << (T,#FFAAAA) >> {
+  + place_id : VARCHAR(36) {PK, NN}          ' 장소 식별자 (UUID)
+  name : VARCHAR(100) {NN}                   ' 장소명
+  category : VARCHAR(30) {NN}                ' 카테고리(카페/전시/산책/체험 등)
+  address : VARCHAR(200) {NN}                ' 주소
+  latitude : DOUBLE {NN}                     ' 위도
+  longitude : DOUBLE {NN}                    ' 경도
+  price_level : INT {NULL}                   ' 가격대(1~5 등급)
+  tags : VARCHAR(200) {NULL}                 ' 태그(분위기, 특징)
+  avg_rating : FLOAT {NULL}                  ' 평균 평점
+}
+
+@enduml

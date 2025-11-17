@@ -1,0 +1,18 @@
+@startuml
+skinparam defaultFontName "Apple SD Gothic Neo"
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+title EVENT 테이블 명세 다이어그램
+
+class Event as "EVENT 테이블\n(이벤트/프로모션)" << (T,#FFAAAA) >> {
+  + event_id : VARCHAR(36) {PK, NN}          ' 이벤트 식별자
+  place_id : VARCHAR(36) {FK, NN}            ' → PLACE.place_id
+  title : VARCHAR(100) {NN}                  ' 이벤트 제목
+  description : TEXT {NULL}                  ' 상세 설명
+  start_date : DATETIME {NN}                 ' 시작 일시
+  end_date : DATETIME {NN}                   ' 종료 일시
+  created_at : DATETIME {NN}                 ' 등록 일시
+}
+
+@enduml

@@ -1,0 +1,15 @@
+@startuml
+skinparam defaultFontName "Apple SD Gothic Neo"
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+title PREFERENCE 테이블 명세 다이어그램
+
+class Preference as "PREFERENCE 테이블\n(사용자 선호 모델)" << (T,#FFAAAA) >> {
+  + user_id : VARCHAR(36) {PK, FK, NN}       ' → USER.user_id
+  preferred_categories : VARCHAR(200) {NULL} ' 선호 카테고리 패턴
+  time_pattern : VARCHAR(100) {NULL}         ' 시간대 이용 패턴
+  mood_pattern : VARCHAR(100) {NULL}         ' 기분·분위기 선호 패턴
+}
+
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+skinparam defaultFontName "Apple SD Gothic Neo"
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+title USER 테이블 명세 다이어그램
+
+class User as "USER 테이블\n(사용자 정보)" << (T,#FFAAAA) >> {
+  + user_id : VARCHAR(36) {PK, NN}           ' 사용자 식별자 (UUID)
+  nickname : VARCHAR(30) {NN}                ' 닉네임
+  email : VARCHAR(100) {NN, UNIQUE}          ' 로그인 이메일
+  budget_range : VARCHAR(20) {NULL}          ' 주로 사용하는 예산대
+  preferred_categories : VARCHAR(200) {NULL} ' 선호 카테고리(문자열 목록)
+  created_at : DATETIME {NN}                 ' 가입 일시
+}
+
+@enduml
