@@ -1,0 +1,19 @@
+{
+  "name": "digital-twin-campus",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test:buildings": "node tests/buildingTest.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "express": "^4.19.0",
+    "mysql2": "^3.5.0",
+    "sequelize": "^6.37.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
