@@ -1,0 +1,178 @@
+@startuml
+title Localy(로코리) 클래스 다이어그램
+
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #333
+  ArrowColor #333
+}
+left to right direction
+
+' =========================
+' 회원 기본/상속 구조
+' =========================
+class Member {
+  +memberId: String
+  +nickname: String
+  +email: String
+}
+
+class User {
+  +budgetRange: String
+  +preferredCategories: String
+}
+
+class BusinessUser {
+  +businessName: String
+  +businessPhone: String
+}
+
+Member <|-- User
+Member <|-- BusinessUser
+
+' =========================
+' 도메인 엔티티
+' =========================
+class Preference {
+  +preferredCategories: String
+  +timePattern: String
+  +moodPattern: String
+}
+
+class Place {
+  +placeId: String
+  +name: String
+  +category: String
+  +address: String
+  +latitude: double
+  +longitude: double
+  +avgRating: float
+  +priceLevel: int
+  +tags: String
+}
+
+class Event {
+  +eventId: String
+  +title: String
+  +description: String
+  +startDateTime: Date
+  +endDateTime: Date
+}
+
+class VisitLog {
+  +logId: String
+  +visitedAt: Date
+  +stayDurationMinutes: int
+  +feedbackType: String    ' LIKE / DISLIKE / REPORT
+  +rating: int
+}
+
+class Favorite {
+  +favoriteId: String
+  +createdAt: Date
+}
+
+class RecommendationContext {
+  +contextId: String
+  +mood: String
+  +timeSlot: String
+  +durationMinutes: int
+  +companionType: String
+}
+
+class RecommendationResult {
+  +resultId: String
+  +score: float
+  +reasonText: String
+}
+
+' =========================
+' 서비스 / 엔진 / 컨트롤러
+' =========================
+class RecommendationEngine {
+  +getRecommendations(user: User, ctx: RecommendationContext): List<RecommendationResult>
+  +rankPlaces(candidates: List<Place>, ctx: RecommendationContext): List<RecommendationResult>
+  +applyFeedbackAdjustment(results: List<RecommendationResult>, logs: List<VisitLog>): List<RecommendationResult>
+}
+
+class PlaceService {
+  +searchPlaces(ctx: RecommendationContext, keyword: String): List<Place>
+  +getPlaceDetail(placeId: String): Place
+  +getEvents(placeId: String): List<Event>
+  +registerPlace(owner: BusinessUser, place: Place): Place
+  +updatePlace(placeId: String, place: Place): Place
+  +registerEvent(placeId: String, event: Event): Event
+}
+
+class AuthService {
+  +register(email: String, password: String, nickname: String): Member
+  +login(email: String, password: String): Member
+  +logout(memberId: String): void
+  +getCurrentMember(token: String): Member
+}
+
+class RecommendationController {
+  +showHome(memberId: String): void
+  +requestRecommendations(memberId: String, ctx: RecommendationContext): List<RecommendationResult>
+  +showPlaceDetail(placeId: String): Place
+  +searchPlaces(ctx: RecommendationContext, keyword: String): List<Place>
+  +viewEvents(placeId: String): List<Event>
+  +toggleFavorite(memberId: String, placeId: String): void
+  +submitFeedback(memberId: String, placeId: String, rating: int, feedbackType: String): void
+}
+
+class AdminService {
+  +getMembers(): List<Member>
+  +deactivateUser(memberId: String): void
+  +handleReports(): void
+  +getReportedPlaces(): List<Place>
+}
+
+' =========================
+' 연관 관계
+' =========================
+Member "1" -- "0..1" Preference
+Member "1" -- "0..*" VisitLog
+Member "1" -- "0..*" Favorite
+Member "1" -- "0..*" RecommendationContext
+
+Place "1" -- "0..*" VisitLog
+Place "1" -- "0..*" Favorite
+Place "1" -- "0..*" Event
+
+' 사업자와 가게/이벤트 소유 관계
+BusinessUser "1" -- "0..*" Place : owns
+BusinessUser "1" -- "0..*" Event : manages
+
+RecommendationContext "1" -- "0..*" RecommendationResult
+Place "1" -- "0..*" RecommendationResult
+
+VisitLog "0..*" -- "0..1" Event : "이벤트 방문 시"
+
+RecommendationEngine ..> User
+RecommendationEngine ..> RecommendationContext
+RecommendationEngine ..> Place
+RecommendationEngine ..> VisitLog
+RecommendationEngine ..> RecommendationResult
+RecommendationEngine ..> Preference
+
+PlaceService ..> Place
+PlaceService ..> Event
+PlaceService ..> RecommendationContext
+PlaceService ..> BusinessUser
+
+AuthService ..> Member
+
+AdminService ..> Member
+AdminService ..> Place
+
+RecommendationController ..> RecommendationEngine
+RecommendationController ..> PlaceService
+RecommendationController ..> AuthService
+RecommendationController ..> AdminService
+RecommendationController ..> Favorite
+RecommendationController ..> VisitLog
+
+@enduml

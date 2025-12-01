@@ -1,0 +1,5 @@
+GET /products/123?color=red HTTP/1.1
+Host: api.example.com
+User-Agent: Mozilla/5.0
+Accept: application/json
+Connection: close

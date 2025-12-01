@@ -1,0 +1,43 @@
+@startuml
+title Localy(로코리) 추천 시나리오 시퀀스 다이어그램
+
+actor User as "사용자"
+participant App as "모바일 앱"
+participant Controller as "RecommendationController"
+participant Auth as "AuthService"
+participant PlaceSvc as "PlaceService"
+participant Engine as "RecommendationEngine"
+database Firebase as "Firebase DB"
+participant Maps as "Google Maps API"
+participant GPT as "ChatGPT API"
+
+note over User,App
+[전제조건] 사용자는 로그인되어 있으며
+유효한 인증 토큰을 가지고 있다.
+end note
+
+User -> App: "추천 받기" 버튼 탭
+App -> Controller: requestRecommendations(memberId, context)
+
+Controller -> Auth: getCurrentMember(token)
+Auth --> Controller: Member(사용자 정보)
+
+Controller -> Firebase: 선호(Preference), 방문 기록(VisitLog) 조회\n(memberId)
+Firebase --> Controller: 선호 + 방문 기록 데이터
+
+Controller -> PlaceSvc: searchPlaces(context, keyword)
+PlaceSvc -> Maps: 주변 장소 검색(위치, 반경)
+Maps --> PlaceSvc: 후보 장소 목록
+PlaceSvc --> Controller: 후보 장소 목록(List<Place>)
+
+Controller -> Engine: getRecommendations(user, context)
+Engine -> Engine: 선호 + 방문 기록 + 후보 장소를\n통합하여 점수 계산 및 RecommendationResult 생성
+Engine --> Controller: 추천 결과 리스트(List<RecommendationResult>)
+
+Controller -> GPT: 설명 문구 생성 요청(추천 결과, context)
+GPT --> Controller: 추천 카드 설명 문구 리스트
+
+Controller --> App: 추천 결과 + 설명 문구 전달
+App --> User: 추천 카드 UI 표시
+
+@enduml

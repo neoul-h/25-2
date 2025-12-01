@@ -3,15 +3,15 @@ print("********************************")
 print("학번: 202104008, 이름: 김진우")
 print("********************************")
 
-# -----------------------------
-# - quotes : (이름, 내용) 튜플을 담은 리스트
-# - pickUp() : 오늘의 날짜/시간과 랜덤 명언 1개를 출력
-# -----------------------------
+# 이 프로그램은 오늘의 명언을 랜덤으로 출력해주는 모듈입니다.
+# 다른 파일에서 import하여 pickUp() 함수를 실행하면 날짜/시간과 명언이 출력됩니다.
 
-import time
+# 파이썬 기본 제공 모듈 random과 datetime 사용
 import random
+import datetime
 
-# (이름, 명언내용)
+# 명언 리스트: (저자, 명언) 형태의 튜플로 구성된 리스트
+# PDF에서 제시된 20개의 명언을 그대로 포함함
 quotes = [
     ("스티브 잡스", "위대한 일을 하는 유일한 방법은 자신이 하는 일을 사랑하는 것이다."),
     ("파울로 코엘료", "지금의 순간이 완벽하지 않아도, 그것이 삶이다."),
@@ -36,20 +36,15 @@ quotes = [
 ]
 
 def pickUp():
-    # 오늘의 명언 하나를 랜덤하게 출력하는 함수
-    # 1) 현재 날짜와 시간 문자열 만들기 (이론 예제 형식 사용)
-    now_str = time.strftime("%Y/%m/%d %H:%M")
-    print(f"[{now_str}]")
+    """
+    오늘의 명언을 날짜와 함께 출력하는 함수.
+    실행 시 현재 시간과 함께 quotes 리스트에서 하나를 랜덤으로 골라 출력함.
+    """
+    now = datetime.datetime.now()     # 현재 날짜와 시간 얻기
+    print(f"{now.strftime('%m월 %d일 %H:%M')} ★오늘의 명언★")
 
-    # 2) 제목 줄 출력
-    print("★오늘의 명언★")
+    # random.choice()를 이용하여 리스트에서 하나의 명언을 무작위 선택
+    author, verse = random.choice(quotes)
 
-    # 3) quotes 리스트에서 사용할 랜덤 인덱스 뽑기
-    #    dice 예제에서처럼 randint(시작, 끝) 사용
-    index = random.randint(0, len(quotes) - 1)
-
-    # 4) 선택된 명언의 (이름, 내용) 꺼내기
-    author, sentence = quotes[index]
-
-    # 5) 명언과 작성자 출력
-    print(f"{sentence} (by. {author})")
+    # 선택된 명언 출력
+    print(f"{verse} (by. {author})")
