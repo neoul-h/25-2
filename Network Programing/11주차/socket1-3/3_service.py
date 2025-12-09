@@ -11,7 +11,7 @@ import socket
 protocol_name = 'tcp'
 for port in [80, 21, 25] :
     print("Port: {} ==> service name: {}".format(
-        port, )
+        port, socket.getservbyport(port, protocol_name)))
 
 print("Port: {} ==> service name: {}".format(
-    53, ))
+    53, socket.getservbyport(53, 'udp')))

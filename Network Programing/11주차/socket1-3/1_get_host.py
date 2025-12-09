@@ -9,13 +9,12 @@
 # host name: DESKTOP-TQ836S2
 # IP address: 220.67.154.156
 # IP address of www.python.org:146.75.48.223
-import 
-from 
-import 
+import errno
+from ipaddress import ip_address
+import socket
 
-host_name = 
-
-ip_address =
+host_name = socket.gethostname()
+ip_address = socket.gethostbyname(host_name)
  
 print (f"host name: {host_name}")
 print (f"IP address: {ip_address}")
@@ -24,7 +23,7 @@ print (f"IP address: {ip_address}")
 # remote_ip_address= gethostbyname(외부 호스트의 도메인 이름의 문자열)
 remote_host = 'www.python.org'
 try:
-    remote_ip_address = 
+    remote_ip_address = socket.gethostbyname(remote_host)
     print(f"IP address of {remote_host}:{remote_ip_address}")
 except IOError as e:
    print('Reading error: {}'.format(str(e)))

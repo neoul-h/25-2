@@ -41,6 +41,41 @@ def client_comm(cs):  #cs: client socket 값
             for socket in clientSockets:
                 socket.send(msg.encode())
 
+def msg_proc(cs, m):
+    global clientSockets
+    tokens = m.split(':')
+    code = tokens[0]
+    try:
+        if (code.upper() == "ID"):
+            print('reg id: ',m)
+            clientSockets[tokens[1]] = cs
+            cs.send("Success:Reg_ID".encode())
+            return True
+        elif (code.upper() == "TO"):
+            fromID = tokens[1]
+            toID = tokens[2]
+            toMsg = tokens[3]
+            print(f"1to1: From {fromID} To {toID} Message {toMsg}")
+            toSocket = clientSockets.get(toID)
+            toSocket.send(m.encode())
+            cs.send("Success:1to1".encode())
+            return True
+                elif (code.upper() == "BR"):
+                    print('broadcast data: ', m)
+                    for socket in clientSockets.values(): # broadcas
+                        if (cs == socket):
+                            cs.send("Success:BR".encode())
+                        else:
+                            socket.send(m.encode())
+                    return True
+                elif (code.upper() == "QUIT"):
+                    fromID = tokens[1]
+                    clientSockets.pop(fromID)
+                    cs.close()
+                    print("Disconnected:{}", fromID)
+                    return False
+            except Exception as e:
+                print(f"Error:{e}")
 
 clientSockets = set() # 연결한 클라이언트들의 소켓값
 while True:
