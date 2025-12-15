@@ -1,0 +1,5 @@
+# agentId passcode level
+aaa APPLE 1
+bbb BANANA 2
+neo ZION 3
+boss ROOT 4

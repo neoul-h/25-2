@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MiniGit</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body class="locked">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">MG</div>
+      <div>
+        <div class="title">MiniGit</div>
+        <div class="subtitle">Projects · Documents · Versions · Tasks</div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="userbox" id="userBox">
+        <span class="badge" id="userBadge">Guest</span>
+      </div>
+      <button class="btn" id="btnOpenAuth">로그인</button>
+      <button class="btn ghost" id="btnLogout" style="display:none;">로그아웃</button>
+    </div>
+  </header>
+
+  <main class="layout" id="appRoot">
+    <aside class="sidebar">
+      <div class="nav">
+        <button class="navbtn active" data-view="projects">프로젝트</button>
+        <button class="navbtn" data-view="documents">문서</button>
+        <button class="navbtn" data-view="versions">버전</button>
+        <button class="navbtn" data-view="tasks">태스크</button>
+        <button class="navbtn" data-view="stats">통계</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">현재 선택</div>
+        <div class="kv"><span>Project</span><b id="selProject">-</b></div>
+        <div class="kv"><span>Document</span><b id="selDocument">-</b></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">빠른 액션</div>
+        <button class="btn full" id="btnNewProject">+ 프로젝트 생성</button>
+        <button class="btn full" id="btnNewDoc">+ 문서 생성</button>
+        <button class="btn full" id="btnNewVersion">+ 버전 생성</button>
+        <button class="btn full" id="btnNewTask">+ 태스크 생성</button>
+      </div>
+    </aside>
+
+    <section class="content">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <h2 id="viewTitle">프로젝트</h2>
+          <span class="muted" id="viewHint">프로젝트 목록을 불러옵니다.</span>
+        </div>
+        <div class="toolbar-right">
+          <input class="input" id="search" placeholder="검색 (이름/제목)" />
+          <button class="btn ghost" id="btnRefresh">새로고침</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">목록</div>
+          <div class="list" id="list"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">상세 / 편집</div>
+          <div id="detail" class="detail muted">왼쪽 목록에서 항목을 선택하세요.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Auth Modal -->
+  <div class="modal" id="authModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close="1"></div>
+
+    <div class="modal-body">
+      <div class="modal-head">
+        <h3>로그인</h3>
+        <button class="iconbtn" data-close="1">✕</button>
+      </div>
+
+      <form id="loginForm">
+        <label class="label">아이디</label>
+        <input class="input" name="username" required />
+
+        <label class="label">비밀번호</label>
+        <input class="input" name="password" type="password" required />
+
+        <button class="btn full" type="submit">로그인</button>
+
+        <div class="auth-switch">
+          <button type="button" id="toRegister" class="link-btn">회원가입</button>
+        </div>
+
+        <div class="note muted">※ 과제용: 토큰 없이 userId 기반으로 동작할 수 있어요.</div>
+      </form>
+
+      <form id="registerForm" style="display:none;">
+        <label class="label">아이디</label>
+        <input class="input" name="username" required />
+
+        <label class="label">비밀번호</label>
+        <input class="input" name="password" type="password" required />
+
+        <label class="label">이름</label>
+        <input class="input" name="name" required />
+
+        <button class="btn full" type="submit">회원가입</button>
+
+        <div class="auth-switch">
+          <button type="button" id="toLogin" class="link-btn">로그인</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Project Create Modal -->
+  <div class="modal" id="projectModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close="project"></div>
+    <div class="modal-body">
+      <div class="modal-head">
+        <h3>프로젝트 생성</h3>
+        <button class="iconbtn" data-close="project">✕</button>
+      </div>
+
+      <form id="projectCreateForm">
+        <label class="label">프로젝트 이름</label>
+        <input class="input" name="name" required placeholder="예: MiniGit 팀 프로젝트" />
+
+        <label class="label">설명 (선택)</label>
+        <textarea class="textarea" name="description" placeholder="프로젝트 설명"></textarea>
+
+        <button class="btn full" type="submit">생성</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Document Create Modal -->
+  <div class="modal" id="documentModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close="document"></div>
+    <div class="modal-body">
+      <div class="modal-head">
+        <h3>문서 생성</h3>
+        <button class="iconbtn" data-close="document">✕</button>
+      </div>
+
+      <form id="documentCreateForm">
+        <label class="label">문서 제목</label>
+        <input class="input" name="title" required placeholder="예: 요구사항 명세서" />
+
+        <label class="label">설명 (선택)</label>
+        <textarea class="textarea" name="description" placeholder="문서 설명"></textarea>
+
+        <button class="btn full" type="submit">생성</button>
+      </form>
+
+      <div class="muted" style="margin-top:10px;">※ 프로젝트를 먼저 선택해야 합니다.</div>
+    </div>
+  </div>
+
+  <!-- Version Create Modal (✅ 수정됨: 파일 업로드 + task 필수) -->
+  <div class="modal" id="versionModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close="version"></div>
+    <div class="modal-body">
+      <div class="modal-head">
+        <h3>버전 생성(업로드)</h3>
+        <button class="iconbtn" data-close="version">✕</button>
+      </div>
+
+      <form id="versionCreateForm" enctype="multipart/form-data">
+        <label class="label">연결할 태스크 (필수)</label>
+        <select class="select" name="task_id" id="versionTaskSelect" required>
+          <option value="">태스크를 선택하세요</option>
+        </select>
+
+        <label class="label">변경 요약 (change_note)</label>
+        <input class="input" name="change_note" placeholder="예: 로그인 오류 수정" />
+
+        <label class="label">내용 (content, 선택)</label>
+        <textarea class="textarea" name="content" placeholder="버전 설명/메모(선택)"></textarea>
+
+        <label class="label">파일 업로드 (필수)</label>
+        <input class="input" name="file" type="file" required />
+
+        <button class="btn full" type="submit">업로드</button>
+      </form>
+
+      <div class="muted" style="margin-top:10px;">※ 문서를 먼저 선택해야 합니다.</div>
+    </div>
+  </div>
+
+  <!-- Task Create Modal -->
+  <div class="modal" id="taskModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close="task"></div>
+    <div class="modal-body">
+      <div class="modal-head">
+        <h3>태스크 생성</h3>
+        <button class="iconbtn" data-close="task">✕</button>
+      </div>
+
+      <form id="taskCreateForm">
+        <label class="label">태스크 제목</label>
+        <input class="input" name="title" required placeholder="예: API 문서 작성" />
+
+        <label class="label">설명 (선택)</label>
+        <textarea class="textarea" name="description" placeholder="태스크 설명"></textarea>
+
+        <label class="label">담당자 username (선택)</label>
+        <input class="input" name="assignee_username" type="text" placeholder="예: sungsil0409" autocomplete="off" />
+
+        <div class="muted" style="margin-top:8px; font-size:12px;">
+          ※ 담당자는 프로젝트 멤버(username)로 지정하세요. (비워두면 미지정)
+        </div>
+
+        <button class="btn full" type="submit">생성</button>
+      </form>
+
+      <div class="muted" style="margin-top:10px;">※ 프로젝트를 먼저 선택해야 합니다.</div>
+    </div>
+  </div>
+
+  <!-- Confirm Modal -->
+  <div class="modal" id="confirmModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close="confirm"></div>
+    <div class="modal-body">
+      <div class="modal-head">
+        <h3 id="confirmTitle">확인</h3>
+        <button class="iconbtn" data-close="confirm">✕</button>
+      </div>
+
+      <div class="muted" id="confirmMessage" style="margin:10px 0 16px;"></div>
+
+      <div class="modal-actions">
+        <button class="btn ghost" id="confirmCancel" type="button">취소</button>
+        <button class="btn" id="confirmOk" type="button">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

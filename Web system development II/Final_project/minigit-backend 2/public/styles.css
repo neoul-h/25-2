@@ -1,0 +1,367 @@
+:root{
+  --bg:#0b0f19;
+  --panel:#121a2a;
+  --card:#0f1729;
+  --muted:#8ea0c3;
+  --text:#e8eeff;
+  --line:#23304a;
+  --accent:#6ea8ff;
+  --danger:#ff6e6e;
+  --ok:#6effb0;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  background:linear-gradient(180deg,#070b13 0%, #0b0f19 40%, #060812 100%);
+  color:var(--text);
+}
+
+/* 로그인 전에는 메인 UI 숨김 */
+body.locked #appRoot{ display:none; }
+
+/* ================= TOP BAR ================= */
+.topbar{
+  position:sticky; top:0;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px;
+  border-bottom:1px solid var(--line);
+  background:rgba(9,12,20,.85);
+  backdrop-filter: blur(10px);
+}
+
+.brand{display:flex; gap:12px; align-items:center}
+.logo{
+  width:40px; height:40px; border-radius:12px;
+  display:grid; place-items:center;
+  background:linear-gradient(135deg,#2b6fff,#8a5cff);
+  font-weight:800;
+}
+.title{font-weight:800}
+.subtitle{font-size:12px; color:var(--muted)}
+
+.right{display:flex; align-items:center; gap:10px}
+.badge{
+  padding:6px 10px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  color:var(--muted);
+  font-size:12px;
+
+  /* 한글/텍스트 줄바꿈 방지 */
+  white-space:nowrap;
+  word-break:keep-all;
+}
+
+/* ================= LAYOUT ================= */
+.layout{
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:16px;
+  padding:16px;
+}
+
+.sidebar{
+  position:sticky; top:72px;
+  height:calc(100vh - 88px);
+  overflow:auto;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:rgba(14,18,32,.65);
+}
+
+.nav{display:flex; flex-direction:column; gap:8px; margin-bottom:12px}
+.navbtn{
+  width:100%;
+  text-align:left;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--text);
+  cursor:pointer;
+
+  white-space:nowrap;
+  word-break:keep-all;
+}
+.navbtn.active{
+  border-color:rgba(110,168,255,.55);
+  background:rgba(110,168,255,.10);
+}
+
+.panel{
+  margin-top:12px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:rgba(15,23,41,.55);
+}
+.panel-title{font-size:12px; color:var(--muted); margin-bottom:10px}
+
+.kv{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+  margin:6px 0;
+}
+.kv span{color:var(--muted)}
+
+.content{
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:rgba(15,23,41,.40);
+  padding:14px;
+  min-height:calc(100vh - 88px);
+}
+
+/* ================= TOOLBAR ================= */
+.toolbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--line);
+}
+.muted{color:var(--muted); font-size:13px}
+
+/* ================= GRID ================= */
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-top:14px;
+}
+
+.card{
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:rgba(18,26,42,.55);
+  padding:12px;
+  min-height:520px;
+}
+.card-title{font-weight:700; margin-bottom:10px}
+
+.list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  overflow:auto;
+  max-height:640px;
+}
+
+/* ✅ item을 flex로 바꿔서 오른쪽에 🗑 버튼을 붙일 수 있게 */
+.item{
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:10px;
+  cursor:pointer;
+  background:rgba(10,14,25,.35);
+
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+.item:hover{border-color:rgba(110,168,255,.45)}
+
+.item .item-main{flex:1; min-width:0;}
+.item .name{font-weight:700}
+.item .meta{font-size:12px; color:var(--muted); margin-top:4px}
+
+.detail{padding:6px}
+
+/* ✅ 상세 상단 “편집/삭제” 버튼 묶음용 */
+.detail-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.detail-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+/* ================= FORM ================= */
+.label{display:block; margin:10px 0 6px; color:var(--muted); font-size:12px}
+.input,.textarea,.select{
+  width:100%;
+  padding:10px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:rgba(8,10,18,.6);
+  color:var(--text);
+
+  word-break:keep-all;
+}
+.textarea{min-height:140px; resize:vertical}
+
+/* ================= BUTTON ================= */
+/* ✅ 핵심: 버튼이 '편\n집'으로 깨지지 않게 */
+.btn{
+  border:1px solid rgba(110,168,255,.35);
+  background:rgba(110,168,255,.14);
+  color:var(--text);
+  padding:9px 12px;
+  border-radius:12px;
+  cursor:pointer;
+
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+
+  white-space:nowrap;   /* 🔥 줄바꿈 금지 */
+  word-break:keep-all;  /* 🔥 한글 쪼개짐 방지 */
+  line-height:1.1;
+}
+.btn:hover{background:rgba(110,168,255,.20)}
+.btn.ghost{background:transparent; border:1px solid var(--line)}
+.btn.full{width:100%; margin-top:10px}
+.btn.danger{border-color:rgba(255,110,110,.45); background:rgba(255,110,110,.14)}
+.btn.ok{border-color:rgba(110,255,176,.45); background:rgba(110,255,176,.12)}
+
+/* ✅ 작은 아이콘 버튼 (목록 오른쪽 🗑 같은 거) */
+.iconbtn{
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--text);
+  border-radius:12px;
+  padding:6px 10px;
+  cursor:pointer;
+
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+
+  white-space:nowrap;
+  word-break:keep-all;
+  line-height:1.1;
+}
+.iconbtn:hover{
+  border-color:rgba(110,168,255,.45);
+  background:rgba(110,168,255,.08);
+}
+.iconbtn.danger{
+  border-color:rgba(255,110,110,.45);
+  color:var(--danger);
+}
+.iconbtn.danger:hover{
+  background:rgba(255,110,110,.12);
+}
+
+/* ✅ 리스트 아이템 오른쪽에 붙는 작은 삭제 버튼용 */
+.item-actions{
+  display:flex;
+  gap:6px;
+  flex-shrink:0;
+}
+.trashbtn{
+  width:34px;
+  height:34px;
+  padding:0;
+  border-radius:12px;
+}
+
+/* ================= MODAL ================= */
+.modal{
+  position:fixed;
+  inset:0;
+  display:none;
+  z-index:9999;
+}
+.modal[aria-hidden="false"]{display:block}
+
+.modal-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.55);
+}
+
+.modal-body{
+  position:relative;
+  width:min(520px,calc(100% - 24px));
+  margin:80px auto;
+  background:#111827;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px;
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+/* Confirm modal 버튼 줄 */
+.modal-actions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+}
+
+/* 로그인/회원가입 폼 하단 링크 공간 */
+#loginForm,#registerForm{
+  position:relative;
+  padding-bottom:34px;
+}
+
+/* 하단 오른쪽 전환 링크 */
+.auth-switch{
+  position:absolute;
+  bottom:14px;
+  right:16px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.auth-switch .link-btn{
+  background:none;
+  border:none;
+  padding:0;
+  font-size:12px;
+  color:var(--accent);
+  cursor:pointer;
+
+  white-space:nowrap;
+  word-break:keep-all;
+}
+.auth-switch .link-btn:hover{
+  text-decoration:underline;
+}
+
+/* ================= TOAST ================= */
+.toast{
+  position:fixed;
+  left:16px;
+  bottom:16px;
+  max-width:min(520px, calc(100% - 32px));
+
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  display:none;
+
+  background:rgba(12,16,28,.85);
+  backdrop-filter: blur(10px);
+}
+.toast.show{display:block}
+.toast.ok{border-color:rgba(110,255,176,.45); background:rgba(110,255,176,.12)}
+.toast.bad{border-color:rgba(255,110,110,.45); background:rgba(255,110,110,.12)}
+
+/* ================= MOBILE ================= */
+@media (max-width:980px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative; top:0; height:auto}
+  .grid{grid-template-columns:1fr}
+}

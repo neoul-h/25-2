@@ -1,0 +1,175 @@
+// Smart Habit Chair – 통합 뼈대 코드
+// 1단계: 자세 감지 + LED/부저
+// 2단계: sendToCloud() 안에 ESP8266 / ThingSpeak 코드만 나중에 넣으면 됨
+
+// ---------- 핀 설정 ----------
+const int trigPin  = 9;
+const int echoPin  = 8;
+const int fsrPin   = A1;
+const int ldrPin   = A0;
+const int redPin   = 3;
+const int greenPin = 5;
+const int bluePin  = 6;
+const int buzzer   = 10;
+
+// ---------- 전역 변수 ----------
+int distanceCm   = 0;   // 초음파 거리
+int seatValue    = 0;   // 압력값 (착석 여부)
+int ldrValue     = 0;   // 조도값
+int postureState = 2;   // 0=GOOD, 1=BAD, 2=ABSENT
+int warningCount = 0;   // 나쁜자세 누적 횟수
+
+// 설계에서 합의한 임계값들
+const int DIST_THRESHOLD = 35;           // cm, 이보다 가까우면 BAD 후보
+const int SEAT_THRESHOLD = 100;          // 압력값, 이 이상이면 앉은 상태
+const unsigned long BAD_HOLD_TIME = 3000; // 3초 유지 시 BAD 확정
+
+// 클라우드 전송용 (나중에 3단계에서 사용)
+const unsigned long SEND_INTERVAL = 10000; // 10초마다 전송
+unsigned long lastSendTime = 0;
+
+// BAD 상태 유지 체크용
+bool badStarted = false;
+unsigned long badStartTime = 0;
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+  pinMode(buzzer, OUTPUT);
+
+  setColor(0, 0, 255);   // 처음엔 파랑(자리 비움)
+}
+
+void loop() {
+  // 1) 센서 읽기
+  readSensors();
+
+  // 2) 자세 상태 업데이트
+  postureState = updatePostureState(distanceCm, seatValue);
+
+  // 3) LED / 부저 제어
+  controlAlert(postureState);
+
+  // 4) 디버깅용 시리얼 출력
+  printStatus();
+
+  // 5) (나중용) 클라우드 전송 훅
+  unsigned long now = millis();
+  if (now - lastSendTime >= SEND_INTERVAL) {
+    lastSendTime = now;
+    sendToCloud(distanceCm, seatValue, ldrValue, postureState, warningCount);
+  }
+
+  delay(200);
+}
+
+// ---------- 함수들 ----------
+
+// 센서값 읽기
+void readSensors() {
+  // 초음파
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  long duration = pulseIn(echoPin, HIGH, 30000);
+  if (duration == 0) {
+    distanceCm = -1;  // 측정 실패
+  } else {
+    distanceCm = duration * 0.034 / 2;
+  }
+
+  // 압력 / 조도
+  seatValue = analogRead(fsrPin);
+  ldrValue  = analogRead(ldrPin);
+}
+
+// 자세 판별
+// return: 0 = GOOD, 1 = BAD, 2 = ABSENT
+int updatePostureState(int distance, int seat) {
+  // 1) 안 앉았을 때
+  if (seat < SEAT_THRESHOLD) {
+    badStarted = false;
+    return 2; // ABSENT
+  }
+
+  // 2) 앉아 있고 GOOD/BAD 판별
+  if (distance > DIST_THRESHOLD || distance < 0) {
+    badStarted = false;
+    return 0; // GOOD
+  } else {
+    // 나쁜 거리 → 일정 시간 이상 유지되면 BAD
+    if (!badStarted) {
+      badStarted = true;
+      badStartTime = millis();
+      return 0;  // 아직 3초 안 지났으니 GOOD 취급
+    } else {
+      if (millis() - badStartTime >= BAD_HOLD_TIME) {
+        return 1; // BAD
+      } else {
+        return 0; // 누적 중
+      }
+    }
+  }
+}
+
+// LED/부저 제어
+void controlAlert(int state) {
+  if (state == 2) {          // 자리 없음
+    setColor(0, 0, 255);     // 파랑
+    noTone(buzzer);
+  } else if (state == 0) {   // 좋은 자세
+    setColor(0, 255, 0);     // 초록
+    noTone(buzzer);
+  } else if (state == 1) {   // 나쁜 자세
+    setColor(255, 0, 0);     // 빨강
+    tone(buzzer, 1000);
+    warningCount++;
+  }
+}
+
+// RGB 색 설정 (0~255)
+void setColor(int r, int g, int b) {
+  analogWrite(redPin,   r);
+  analogWrite(greenPin, g);
+  analogWrite(bluePin,  b);
+}
+
+// 상태 출력 (디버깅용)
+void printStatus() {
+  Serial.print("dist=");
+  Serial.print(distanceCm);
+  Serial.print(" cm, seat=");
+  Serial.print(seatValue);
+  Serial.print(", ldr=");
+  Serial.print(ldrValue);
+  Serial.print(", posture=");
+  Serial.print(postureState);
+  Serial.print(", warnings=");
+  Serial.println(warningCount);
+}
+
+// (나중에) ESP8266 / ThingSpeak 연동용 훅
+// 지금은 그냥 시리얼에만 찍게 해둠
+void sendToCloud(int dist, int seat, int ldr, int posture, int warn) {
+  Serial.print("[CLOUD] dist=");
+  Serial.print(dist);
+  Serial.print(", seat=");
+  Serial.print(seat);
+  Serial.print(", ldr=");
+  Serial.print(ldr);
+  Serial.print(", posture=");
+  Serial.print(posture);
+  Serial.print(", warn=");
+  Serial.println(warn);
+
+  // ★ 3단계에서 여기 안에
+  // ESP8266으로 HTTP 요청 보내는 코드 넣으면 됨.
+}
